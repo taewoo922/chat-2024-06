@@ -1,4 +1,4 @@
-package com.ll.chat_2024_06_03.domain.chat.chatRoom.controller;
+package com.ll.chat_2024_06_03.domain.chat.catRoom.controller;
 
 import com.ll.chat_2024_06_03.domain.chat.chatRoom.entity.ChatRoom;
 import com.ll.chat_2024_06_03.domain.chat.chatRoom.service.ChatRoomService;
@@ -16,9 +16,14 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @GetMapping("/{roomId}")
-    public String showRoom(@PathVariable("roomId") final long roomId,
-                           @RequestParam(value = "writerName", defaultValue = "NoName") final String writerName
+    public String showRoom(
+            @PathVariable("roomId") final long roomId,
+            @RequestParam(value = "writerName", defaultValue = "NoName") final String writerName,
+            Model model
     ) {
+        ChatRoom room = chatRoomService.findById(roomId).get();
+        model.addAttribute("room", room);
+
         return "domain/chat/chatRoom/room";
     }
 
@@ -28,7 +33,8 @@ public class ChatRoomController {
     }
 
     @PostMapping("/make")
-    public String make(@RequestParam(value = "name") final String name
+    public String make(
+            @RequestParam(value = "name") final String name
     ) {
         chatRoomService.make(name);
         return "redirect:/chat/room/list";
@@ -41,4 +47,14 @@ public class ChatRoomController {
         return "domain/chat/chatRoom/list";
     }
 
+    @PostMapping("/{roomId}/write")
+    public String write(
+            @PathVariable("roomId") final long roomId,
+            @RequestParam(value = "writerName") final String writerName,
+            @RequestParam(value = "content") final String content
+    ) {
+        chatRoomService.write(roomId, writerName, content);
+
+        return "redirect:/chat/room/" + roomId;
+    }
 }
